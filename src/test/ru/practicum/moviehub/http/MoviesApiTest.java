@@ -132,8 +132,8 @@ public class MoviesApiTest {
 
         assertEquals(JSON_CONTENT_TYPE, response.headers().firstValue("Content-Type").orElse(""));
 
-        assertTrue(movie.getId() > 0 && movie.getYear() == 2000 && movie.getTitle().equals("Титаник")
-                , "Входные данные не равны выходным");
+        assertTrue(movie.getId() > 0 && movie.getYear() == 2000 && movie.getTitle().equals("Титаник"),
+                "Входные данные не равны выходным");
     }
 
     @Test
@@ -155,7 +155,7 @@ public class MoviesApiTest {
         assertEquals(JSON_CONTENT_TYPE, response.headers().firstValue("Content-Type").orElse(""));
 
         assertEquals("Ошибка валидации", errorResponse.getError(), "Входные данные не равны выходным");
-        assertFalse(errorResponse.getDetails().isEmpty(),"Массив details не должен быть пустым");
+        assertFalse(errorResponse.getDetails().isEmpty(), "Массив details не должен быть пустым");
     }
 
     @Test
@@ -178,7 +178,7 @@ public class MoviesApiTest {
         assertEquals(JSON_CONTENT_TYPE, response.headers().firstValue("Content-Type").orElse(""));
 
         assertEquals("Ошибка валидации", errorResponse.getError(), "Входные данные не равны выходным");
-        assertFalse(errorResponse.getDetails().isEmpty(),"Массив details не должен быть пустым");
+        assertFalse(errorResponse.getDetails().isEmpty(), "Массив details не должен быть пустым");
     }
 
     @Test
@@ -200,7 +200,7 @@ public class MoviesApiTest {
         assertEquals(JSON_CONTENT_TYPE, response.headers().firstValue("Content-Type").orElse(""));
 
         assertEquals("Ошибка валидации", errorResponse.getError(), "Входные данные не равны выходным");
-        assertFalse(errorResponse.getDetails().isEmpty(),"Массив details не должен быть пустым");
+        assertFalse(errorResponse.getDetails().isEmpty(), "Массив details не должен быть пустым");
     }
 
     @Test
@@ -222,7 +222,7 @@ public class MoviesApiTest {
         assertEquals(JSON_CONTENT_TYPE, response.headers().firstValue("Content-Type").orElse(""));
 
         assertEquals("Ошибка валидации", errorResponse.getError(), "Входные данные не равны выходным");
-        assertFalse(errorResponse.getDetails().isEmpty(),"Массив details не должен быть пустым");
+        assertFalse(errorResponse.getDetails().isEmpty(), "Массив details не должен быть пустым");
     }
 
     @Test
@@ -537,8 +537,8 @@ public class MoviesApiTest {
 
         HttpResponse<String> getResponse = client.send(getRequest, responseBodyHandler);
 
-        assertEquals(JSON_CONTENT_TYPE, getResponse.headers().firstValue("Content-Type").orElse("")
-                , "Для GET должен вернуться Content-Type:" + JSON_CONTENT_TYPE);
+        assertEquals(JSON_CONTENT_TYPE, getResponse.headers().firstValue("Content-Type").orElse(""),
+                "Для GET должен вернуться Content-Type:" + JSON_CONTENT_TYPE);
 
         String body = "{\"title\":\"TEST\",\"year\":2010}";
 
@@ -550,8 +550,8 @@ public class MoviesApiTest {
 
         HttpResponse<String> postResponse = client.send(postRequest, responseBodyHandler);
 
-        assertEquals(JSON_CONTENT_TYPE, postResponse.headers().firstValue("Content-Type").orElse("")
-                , "Для POST должен вернуться Content-Type:" + JSON_CONTENT_TYPE);
+        assertEquals(JSON_CONTENT_TYPE, postResponse.headers().firstValue("Content-Type").orElse(""),
+                "Для POST должен вернуться Content-Type:" + JSON_CONTENT_TYPE);
     }
 
     @Test
