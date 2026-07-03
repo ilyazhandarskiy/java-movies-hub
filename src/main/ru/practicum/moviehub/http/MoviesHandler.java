@@ -23,7 +23,7 @@ public class MoviesHandler extends BaseHttpHandler {
     private static final Pattern YEAR_QUERY_PATTERN = Pattern.compile("(^|&)year=(?<year>\\d+)(&|$)");
     private static final Pattern MOVIE_ID_INT_PATTERN = Pattern.compile("^/movies/(\\d+)$");
     //регулярное выражение для определения строки - по ТЗ требуется проверить является ли ID числом и выдавать HTTP 400
-    private static final Pattern MOVIE_FIRST_PATH_PATTERN = Pattern.compile("^/movies/([^/]+)$");
+    private static final Pattern MOVIE_FIRST_PATH_PATTERN = Pattern.compile("^/movies/([^/]*)$");
 
     private final MoviesStore store;
     private final Gson gson = new Gson();
