@@ -20,6 +20,11 @@ public class MoviesHandler extends BaseHttpHandler {
     private static final int MAX_TITLE_SIZE = 100;
     private static final int MIN_YEAR = 1888;
 
+    private static final Pattern YEAR_QUERY_PATTERN = Pattern.compile("(^|&)year=(?<year>\\d+)(&|$)");
+    private static final Pattern MOVIE_ID_INT_PATTERN = Pattern.compile("^/movies/(\\d+)$");
+    //регулярное выражение для определения строки - по ТЗ требуется проверить является ли ID числом и выдавать HTTP 400
+    private static final Pattern MOVIE_FIRST_PATH_PATTERN = Pattern.compile("^/movies/([^/]+)$");
+
     private final MoviesStore store;
     private final Gson gson = new Gson();
 
@@ -54,20 +59,24 @@ public class MoviesHandler extends BaseHttpHandler {
     }
 
     private Endpoint getEndpoint(HttpExchange ex) {
-        if (ex.getRequestMethod().equals("GET")) {
-            if (ex.getRequestURI().getPath().equals("/movies") && ex.getRequestURI().getQuery() == null) {
+        String method = ex.getRequestMethod();
+        String path = ex.getRequestURI().getPath();
+        String query = ex.getRequestURI().getQuery();
+
+        if (method.equals("GET")) {
+            if (path.equals("/movies") && query == null) {
                 return Endpoint.GET_ALL;
             }
-            if (ex.getRequestURI().getPath().contains("/movies/") && ex.getRequestURI().getQuery() == null) {
+            if (MOVIE_FIRST_PATH_PATTERN.matcher(path).matches() && query == null) {
                 return Endpoint.GET_BY_ID;
             }
-            if (ex.getRequestURI().getPath().equals("/movies") && ex.getRequestURI().getQuery() != null) {
+            if (path.equals("/movies")) {
                 return Endpoint.GET_ALL_BY_YEAR;
             }
             return Endpoint.UNKNOWN;
-        } else if (ex.getRequestMethod().equals("POST") && ex.getRequestURI().getPath().equals("/movies")) {
+        } else if (method.equals("POST") && path.equals("/movies")) {
             return Endpoint.POST;
-        } else if (ex.getRequestMethod().equals("DELETE") && ex.getRequestURI().getPath().contains("/movies/")) {
+        } else if (method.equals("DELETE") && MOVIE_FIRST_PATH_PATTERN.matcher(path).matches()) {
             return Endpoint.DELETE;
         }
         return Endpoint.UNKNOWN;
@@ -80,17 +89,14 @@ public class MoviesHandler extends BaseHttpHandler {
     }
 
     private void handleGetById(HttpExchange ex) throws IOException {
-        int id;
+        Matcher matcher = MOVIE_ID_INT_PATTERN.matcher(ex.getRequestURI().getPath());
 
-        Pattern pattern = Pattern.compile("^/movies/(\\d+)$");
-        Matcher matcher = pattern.matcher(ex.getRequestURI().getPath());
-
-        if (matcher.find()) {
-            id = Integer.parseInt(matcher.group(1));
-        } else {
+        if (!matcher.find()) {
             sendJson(ex, 400, gson.toJson(new ErrorResponse("Некорректный ID")));
             return;
         }
+
+        int id = Integer.parseInt(matcher.group(1));
 
         Optional<Movie> movie = store.getMovieById(id);
 
@@ -104,18 +110,16 @@ public class MoviesHandler extends BaseHttpHandler {
     }
 
     private void handleGetAllByYear(HttpExchange ex) throws IOException {
-        int year;
         String query = ex.getRequestURI().getQuery();
 
-        Pattern pattern = Pattern.compile("(^|&)year=(?<year>\\d+)(&|$)");
-        Matcher matcher = pattern.matcher(query);
+        Matcher matcher = YEAR_QUERY_PATTERN.matcher(query == null ? "" : query);
 
-        if (matcher.find()) {
-            year = Integer.parseInt(matcher.group("year"));
-        } else {
+        if (!matcher.find()) {
             sendJson(ex, 400, gson.toJson(new ErrorResponse("Некорректный параметр запроса — 'year'")));
             return;
         }
+
+        int year = Integer.parseInt(matcher.group("year"));
 
         String json = gson.toJson(store.getMoviesByYear(year));
         sendJson(ex, 200, json);
@@ -126,7 +130,7 @@ public class MoviesHandler extends BaseHttpHandler {
 
         String contentType = ex.getRequestHeaders().getFirst("Content-Type");
         if (contentType == null || !contentType.startsWith("application/json")) {
-            sendJson(ex, 415, gson.toJson(new ErrorResponse("Invalid Content-Type")));
+            sendJson(ex, 415, gson.toJson(new ErrorResponse("Некорректный Content-Type")));
             return;
         }
 
@@ -134,11 +138,19 @@ public class MoviesHandler extends BaseHttpHandler {
         try {
             movie = gson.fromJson(body, Movie.class);
         } catch (JsonSyntaxException e) {
-            sendJson(ex, 400, gson.toJson(new ErrorResponse("Invalid JSON syntax")));
+            sendJson(ex, 400, gson.toJson(new ErrorResponse("Некорректный JSON синтаксис")));
             return;
         }
 
-        List<String> errors = validateMovieInput(movie);
+        //список деталей валидации
+        List<String> errors;
+
+        try {
+            errors = validateMovieInput(movie);
+        } catch (IllegalArgumentException e) {
+            sendJson(ex, 400, gson.toJson(new ErrorResponse(e.getMessage())));
+            return;
+        }
 
         if (!errors.isEmpty()) {
             sendJson(ex, 422, gson.toJson(new ErrorResponse("Ошибка валидации", errors)));
@@ -150,19 +162,15 @@ public class MoviesHandler extends BaseHttpHandler {
     }
 
     private void handleDelete(HttpExchange ex) throws IOException {
-        int id;
+        Matcher matcher = MOVIE_ID_INT_PATTERN.matcher(ex.getRequestURI().getPath());
 
-        Pattern pattern = Pattern.compile("^/movies/(\\d+)$");
-        Matcher matcher = pattern.matcher(ex.getRequestURI().getPath());
-
-        if (matcher.find()) {
-            id = Integer.parseInt(matcher.group(1));
-        } else {
+        if (!matcher.find()) {
             sendJson(ex, 400, gson.toJson(new ErrorResponse("Некорректный ID")));
             return;
         }
 
-        Optional<Movie> movie = store.getMovieById(id);
+        int id = Integer.parseInt(matcher.group(1));
+        Optional<Movie> movie = store.getMovieById(Integer.parseInt(matcher.group(1)));
 
         if (movie.isEmpty()) {
             sendJson(ex, 404, gson.toJson(new ErrorResponse("Фильм не найден")));
@@ -176,9 +184,13 @@ public class MoviesHandler extends BaseHttpHandler {
 
     // валидация данных
     private List<String> validateMovieInput(Movie movie) {
-        int maxYear = LocalDate.now().getYear() + 1;
+        if (movie == null) {
+            throw new IllegalArgumentException("Объект movie не должен быть пустым");
+        }
 
         List<String> result = new ArrayList<>();
+
+        int maxYear = LocalDate.now().getYear() + 1;
 
         if (movie.getTitle() == null || movie.getTitle().isBlank()) {
             result.add("название не должно быть пустым");

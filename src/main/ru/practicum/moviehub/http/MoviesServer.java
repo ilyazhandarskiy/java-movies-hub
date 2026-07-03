@@ -19,13 +19,11 @@ public class MoviesServer {
     }
 
     public void start() {
-        // запустите сервер
         server.start();
         System.out.println("Сервер запущен по адресу http://localhost:" + server.getAddress().getPort());
     }
 
     public void stop() {
-        // остановите сервер
         server.stop(0);
         System.out.println("Сервер остановлен");
     }

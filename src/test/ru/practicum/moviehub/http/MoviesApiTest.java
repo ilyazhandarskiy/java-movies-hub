@@ -54,7 +54,7 @@ public class MoviesApiTest {
     @Test
     void getMovies_whenEmpty_returnsEmptyArray() throws Exception {
         HttpRequest req = HttpRequest.newBuilder()
-                .uri(URI.create(BASE + "/movies")) // !!! Добавьте правильный URI
+                .uri(URI.create(BASE + "/movies"))
                 .header("Content-Type", JSON_CONTENT_TYPE)
                 .GET()
                 .build();
@@ -89,7 +89,7 @@ public class MoviesApiTest {
         store.addMovie(new Movie("Титаник 2", 2002));
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE + "/movies")) // !!! Добавьте правильный URI
+                .uri(URI.create(BASE + "/movies"))
                 .header("Content-Type", JSON_CONTENT_TYPE)
                 .GET()
                 .build();
@@ -118,7 +118,7 @@ public class MoviesApiTest {
     void addMovie_withCorrectData_returnsAddedMovie() throws Exception {
         String body = "{\"title\":\"Титаник\",\"year\":2000}";
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE + "/movies")) // !!! Добавьте правильный URI
+                .uri(URI.create(BASE + "/movies"))
                 .header("Content-Type", "application/json; charset=UTF-8")
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
@@ -140,7 +140,7 @@ public class MoviesApiTest {
     void addMovie_withEmptyTitle_returnsError() throws Exception {
         String body = "{\"title\":\"\",\"year\":2000}";
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE + "/movies")) // !!! Добавьте правильный URI
+                .uri(URI.create(BASE + "/movies"))
                 .header("Content-Type", "application/json; charset=UTF-8")
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
@@ -163,7 +163,7 @@ public class MoviesApiTest {
         String title = "Титаник".repeat(20);
         String body = "{\"title\":\"" + title + "\",\"year\":2000}";
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE + "/movies")) // !!! Добавьте правильный URI
+                .uri(URI.create(BASE + "/movies"))
                 .header("Content-Type", "application/json; charset=UTF-8")
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
@@ -185,7 +185,7 @@ public class MoviesApiTest {
     void addMovie_withNotValidYear2030_returnsError() throws Exception {
         String body = "{\"title\":\"Титаник\",\"year\":2030}";
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE + "/movies")) // !!! Добавьте правильный URI
+                .uri(URI.create(BASE + "/movies"))
                 .header("Content-Type", "application/json; charset=UTF-8")
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
@@ -207,7 +207,7 @@ public class MoviesApiTest {
     void addMovie_withNotValidYear1800_returnsError() throws Exception {
         String body = "{\"title\":\"Титаник\",\"year\":1800}";
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE + "/movies")) // !!! Добавьте правильный URI
+                .uri(URI.create(BASE + "/movies"))
                 .header("Content-Type", "application/json; charset=UTF-8")
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
@@ -229,7 +229,7 @@ public class MoviesApiTest {
     void addMovie_withNotValidContentType_returnsError() throws Exception {
         String body = "{\"title\":\"Титаник\",\"year\":2000}";
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE + "/movies")) // !!! Добавьте правильный URI
+                .uri(URI.create(BASE + "/movies"))
                 .header("Content-Type", "application/xml; charset=UTF-8")
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
@@ -243,14 +243,14 @@ public class MoviesApiTest {
 
         assertEquals(JSON_CONTENT_TYPE, response.headers().firstValue("Content-Type").orElse(""));
 
-        assertEquals("Invalid Content-Type", errorResponse.getError(), "Входные данные не равны выходным");
+        assertEquals("Некорректный Content-Type", errorResponse.getError(), "Входные данные не равны выходным");
     }
 
     @Test
     void addMovie_withNotValidJSON_returnsError() throws Exception {
         String body = "\"title\":\"Титаник\",\"year\":2000";
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE + "/movies")) // !!! Добавьте правильный URI
+                .uri(URI.create(BASE + "/movies"))
                 .header("Content-Type", "application/json; charset=UTF-8")
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
@@ -264,7 +264,7 @@ public class MoviesApiTest {
 
         assertEquals(JSON_CONTENT_TYPE, response.headers().firstValue("Content-Type").orElse(""));
 
-        assertEquals("Invalid JSON syntax", errorResponse.getError(), "Входные данные не равны выходным");
+        assertEquals("Некорректный JSON синтаксис", errorResponse.getError(), "Входные данные не равны выходным");
     }
 
     //---GET_BY_ID---
@@ -274,7 +274,7 @@ public class MoviesApiTest {
         store.addMovie(movie);
 
         HttpRequest req = HttpRequest.newBuilder()
-                .uri(URI.create(BASE + "/movies/" + movie.getId())) // !!! Добавьте правильный URI
+                .uri(URI.create(BASE + "/movies/" + movie.getId()))
                 .header("Content-Type", JSON_CONTENT_TYPE)
                 .GET()
                 .build();
@@ -303,7 +303,7 @@ public class MoviesApiTest {
     @Test
     void getMovies_whenNotFound_returnsError() throws Exception {
         HttpRequest req = HttpRequest.newBuilder()
-                .uri(URI.create(BASE + "/movies/9999")) // !!! Добавьте правильный URI
+                .uri(URI.create(BASE + "/movies/9999"))
                 .header("Content-Type", JSON_CONTENT_TYPE)
                 .GET()
                 .build();
@@ -330,7 +330,7 @@ public class MoviesApiTest {
     @Test
     void getMovies_whenNotValidId_returnsError() throws Exception {
         HttpRequest req = HttpRequest.newBuilder()
-                .uri(URI.create(BASE + "/movies/lala")) // !!! Добавьте правильный URI
+                .uri(URI.create(BASE + "/movies/aaa"))
                 .header("Content-Type", JSON_CONTENT_TYPE)
                 .GET()
                 .build();
@@ -361,7 +361,7 @@ public class MoviesApiTest {
         store.addMovie(movie);
 
         HttpRequest deleteRequest = HttpRequest.newBuilder()
-                .uri(URI.create(BASE + "/movies/" + movie.getId())) // !!! Добавьте правильный URI
+                .uri(URI.create(BASE + "/movies/" + movie.getId()))
                 .header("Content-Type", JSON_CONTENT_TYPE)
                 .DELETE()
                 .build();
@@ -374,7 +374,7 @@ public class MoviesApiTest {
         assertEquals(204, deleteResponse.statusCode(), "Должен вернуться 204");
 
         HttpRequest getRequest = HttpRequest.newBuilder()
-                .uri(URI.create(BASE + "/movies/" + movie.getId())) // !!! Добавьте правильный URI
+                .uri(URI.create(BASE + "/movies/" + movie.getId()))
                 .header("Content-Type", JSON_CONTENT_TYPE)
                 .GET()
                 .build();
@@ -387,7 +387,7 @@ public class MoviesApiTest {
     @Test
     void deleteMovie_whenNotExists_returns404() throws Exception {
         HttpRequest deleteRequest = HttpRequest.newBuilder()
-                .uri(URI.create(BASE + "/movies/9999")) // !!! Добавьте правильный URI
+                .uri(URI.create(BASE + "/movies/9999"))
                 .header("Content-Type", JSON_CONTENT_TYPE)
                 .DELETE()
                 .build();
@@ -403,7 +403,7 @@ public class MoviesApiTest {
     @Test
     void deleteMovie_whenNotExists_returns400() throws Exception {
         HttpRequest deleteRequest = HttpRequest.newBuilder()
-                .uri(URI.create(BASE + "/movies/pupu")) // !!! Добавьте правильный URI
+                .uri(URI.create(BASE + "/movies/pupu"))
                 .header("Content-Type", JSON_CONTENT_TYPE)
                 .DELETE()
                 .build();
@@ -424,7 +424,7 @@ public class MoviesApiTest {
         store.addMovie(new Movie("Титаник 2", 2000));
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE + "/movies?year=2000")) // !!! Добавьте правильный URI
+                .uri(URI.create(BASE + "/movies?year=2000"))
                 .header("Content-Type", JSON_CONTENT_TYPE)
                 .GET()
                 .build();
@@ -452,7 +452,7 @@ public class MoviesApiTest {
         store.addMovie(new Movie("Титаник 2", 2000));
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE + "/movies?year=2001")) // !!! Добавьте правильный URI
+                .uri(URI.create(BASE + "/movies?year=2001"))
                 .header("Content-Type", JSON_CONTENT_TYPE)
                 .GET()
                 .build();
@@ -477,7 +477,7 @@ public class MoviesApiTest {
     @Test
     void getMoviesByYear_withNonNumericYear_returns400() throws Exception {
         HttpRequest deleteRequest = HttpRequest.newBuilder()
-                .uri(URI.create(BASE + "/movies/pupu")) // !!! Добавьте правильный URI
+                .uri(URI.create(BASE + "/movies/1a"))
                 .header("Content-Type", JSON_CONTENT_TYPE)
                 .GET()
                 .build();
@@ -495,7 +495,7 @@ public class MoviesApiTest {
     @Test
     void unsupportedMethodOnMovies_returns405() throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE + "/movies")) // !!! Добавьте правильный URI
+                .uri(URI.create(BASE + "/movies"))
                 .header("Content-Type", JSON_CONTENT_TYPE)
                 .HEAD()
                 .build();
@@ -511,7 +511,7 @@ public class MoviesApiTest {
     @Test
     void unsupportedMethodOnMovieById_returns405() throws Exception {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE + "/movies/1")) // !!! Добавьте правильный URI
+                .uri(URI.create(BASE + "/movies/1"))
                 .header("Content-Type", JSON_CONTENT_TYPE)
                 .HEAD()
                 .build();
@@ -527,7 +527,7 @@ public class MoviesApiTest {
     @Test
     void allSuccessfulResponses_haveJsonContentType() throws Exception {
         HttpRequest getRequest = HttpRequest.newBuilder()
-                .uri(URI.create(BASE + "/movies")) // !!! Добавьте правильный URI
+                .uri(URI.create(BASE + "/movies"))
                 .header("Content-Type", JSON_CONTENT_TYPE)
                 .GET()
                 .build();
@@ -543,7 +543,7 @@ public class MoviesApiTest {
         String body = "{\"title\":\"TEST\",\"year\":2010}";
 
         HttpRequest postRequest = HttpRequest.newBuilder()
-                .uri(URI.create(BASE + "/movies")) // !!! Добавьте правильный URI
+                .uri(URI.create(BASE + "/movies"))
                 .header("Content-Type", JSON_CONTENT_TYPE)
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
@@ -557,7 +557,7 @@ public class MoviesApiTest {
     @Test
     void errorResponses404_alwaysHaveErrorField() throws Exception {
         HttpRequest getRequest = HttpRequest.newBuilder()
-                .uri(URI.create(BASE + "/movies/9999")) // !!! Добавьте правильный URI
+                .uri(URI.create(BASE + "/movies/9999"))
                 .header("Content-Type", JSON_CONTENT_TYPE)
                 .GET()
                 .build();
@@ -574,7 +574,7 @@ public class MoviesApiTest {
     @Test
     void errorResponses400_alwaysHaveErrorField() throws Exception {
         HttpRequest getRequest = HttpRequest.newBuilder()
-                .uri(URI.create(BASE + "/movies/aaa")) // !!! Добавьте правильный URI
+                .uri(URI.create(BASE + "/movies/aaa"))
                 .header("Content-Type", JSON_CONTENT_TYPE)
                 .GET()
                 .build();
@@ -585,6 +585,7 @@ public class MoviesApiTest {
         HttpResponse<String> getResponse = client.send(getRequest, responseBodyHandler);
 
         JsonObject err400 = gson.fromJson(getResponse.body(), JsonObject.class);
+        assertEquals(400, getResponse.statusCode(), "должен вернуться 400");
         assertTrue(err400.has("error"), "400 должен содержать поле error");
     }
 
@@ -594,7 +595,7 @@ public class MoviesApiTest {
         String body = "{\"title\":\"TEST\",\"year\":2030}";
 
         HttpRequest getRequest = HttpRequest.newBuilder()
-                .uri(URI.create(BASE + "/movies")) // !!! Добавьте правильный URI
+                .uri(URI.create(BASE + "/movies"))
                 .header("Content-Type", JSON_CONTENT_TYPE)
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
